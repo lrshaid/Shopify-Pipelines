@@ -1,28 +1,28 @@
 import requests
 import json
 import time
-from config import SHOPIFY_API_URL, SHOPIFY_HEADERS
+from config import SHOPIFY_API_URL, SHOPIFY_HEADERS, SAVE_DATA
 
 def create_bulk_operation(graphql_query: str):
     """Create a bulk operation to execute the provided GraphQL query document."""
     bulk_mutation = f'''
-mutation {{
-  bulkOperationRunQuery(
-    query: """
-{graphql_query}
-"""
-  ) {{
-    bulkOperation {{
-      id
-      status
-    }}
-    userErrors {{
-      field
-      message
-    }}
-  }}
-}}
-'''
+      mutation {{
+        bulkOperationRunQuery(
+          query: """
+      {graphql_query}
+      """
+        ) {{
+          bulkOperation {{
+            id
+            status
+          }}
+          userErrors {{
+            field
+            message
+          }}
+        }}
+      }}
+      '''
     response = requests.post(
         SHOPIFY_API_URL,
         headers=SHOPIFY_HEADERS,
@@ -34,21 +34,21 @@ mutation {{
 def check_bulk_operation_status(operation_id: str):
     """Check the status of a bulk operation by ID."""
     status_query = f'''
-{{
-  node(id: "{operation_id}") {{
-    ... on BulkOperation {{
-      id
-      status
-      errorCode
-      createdAt
-      completedAt
-      objectCount
-      fileSize
-      url
-    }}
-  }}
-}}
-'''
+      {{
+        node(id: "{operation_id}") {{
+          ... on BulkOperation {{
+            id
+            status
+            errorCode
+            createdAt
+            completedAt
+            objectCount
+            fileSize
+            url
+          }}
+        }}
+      }}
+      '''
     response = requests.post(
         SHOPIFY_API_URL,
         headers=SHOPIFY_HEADERS,
@@ -65,40 +65,40 @@ def download_bulk_data(url: str) -> str:
 
 # Bulk query to fetch orders with line items
 bulk_query = """
-{
-  orders {
-    edges {
-      node {
-        id
-        name
-        createdAt
-        processedAt
-        currencyCode
-        totalPriceSet { shopMoney { amount currencyCode } }
-        tags
-        note
-        customer { id firstName lastName email }
-        shippingAddress { name address1 address2 city province country zip phone }
-        billingAddress { name address1 address2 city province country zip phone }
-        lineItems {
-          edges {
-            node {
-              id
-              title
-              quantity
-              fulfillableQuantity
-              fulfillmentStatus
-              variant { id sku title }
-              originalUnitPriceSet { shopMoney { amount currencyCode } }
-              discountedTotalSet { shopMoney { amount currencyCode } }
+    {
+      orders {
+        edges {
+          node {
+            id
+            name
+            createdAt
+            processedAt
+            currencyCode
+            totalPriceSet { shopMoney { amount currencyCode } }
+            tags
+            note
+            customer { id firstName lastName email }
+            shippingAddress { name address1 address2 city province country zip phone }
+            billingAddress { name address1 address2 city province country zip phone }
+            lineItems {
+              edges {
+                node {
+                  id
+                  title
+                  quantity
+                  fulfillableQuantity
+                  fulfillmentStatus
+                  variant { id sku title }
+                  originalUnitPriceSet { shopMoney { amount currencyCode } }
+                  discountedTotalSet { shopMoney { amount currencyCode } }
+                }
+              }
             }
           }
         }
       }
     }
-  }
-}
-"""
+    """
 
 print("Creating bulk operation...")
 create_result = create_bulk_operation(bulk_query)
@@ -195,10 +195,11 @@ if status == "COMPLETED":
     print("Downloading results...")
     data_text = download_bulk_data(signed_url)
 
-    # Save to file (uncomment if you want to persist locally)
-    # with open('bulk_orders_data.jsonl', 'w') as f:
-    #     f.write(data_text)
-    # print("Results saved to bulk_orders_data.jsonl")
+    if SAVE_DATA:
+      # Save to file (uncomment if you want to persist locally)
+      with open('bulk_orders_data.jsonl', 'w') as f:
+          f.write(data_text)
+      print("Results saved to bulk_orders_data.jsonl")
 
     # Example: show count of lines
     line_count = len([ln for ln in data_text.splitlines() if ln.strip()])
