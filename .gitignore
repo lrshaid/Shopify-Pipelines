@@ -43,3 +43,11 @@ Thumbs.db
 # Data outputs
 bulk_data/
 *.jsonl
+
+# Google Cloud credentials (do not commit service account or ADC files)
+application_default_credentials.json
+*service-account*.json
+*service_account*.json
+*.credentials.json
+credentials/*.json
+*triple=acre*.json
