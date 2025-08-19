@@ -50,4 +50,5 @@ application_default_credentials.json
 *service_account*.json
 *.credentials.json
 credentials/*.json
-*triple=acre*.json
+triple-acre-469215-p0-1c774193eca9.json
+*triple-acre*.json
