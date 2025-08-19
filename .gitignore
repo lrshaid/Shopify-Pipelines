@@ -38,4 +38,8 @@ ENV/
 
 # OS
 .DS_Store
-Thumbs.db .env
+Thumbs.db
+
+# Data outputs
+bulk_data/
+*.jsonl
