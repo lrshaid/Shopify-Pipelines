@@ -1,13 +1,9 @@
 import requests
 import json
 import time
-<<<<<<< HEAD:import requests.py
 import os
 from config import SHOPIFY_API_URL, SHOPIFY_HEADERS
 from queries import QUERIES
-=======
-from config import SHOPIFY_API_URL, SHOPIFY_HEADERS, SAVE_DATA
->>>>>>> refs/remotes/origin/main:data_pipeline.py
 
 def create_bulk_operation(graphql_query: str):
     """Create a bulk operation to execute the provided GraphQL query document."""
@@ -69,7 +65,6 @@ def download_bulk_data(url: str) -> str:
     response.raise_for_status()
     return response.text
 
-<<<<<<< HEAD:import requests.py
 def run_bulk_operation(query_key: str, query_info: dict):
     """Run a single bulk operation and save results."""
     print(f"\n{'='*60}")
@@ -84,45 +79,6 @@ def run_bulk_operation(query_key: str, query_info: dict):
     
     print("Creating bulk operation...")
     create_result = create_bulk_operation(query_info['query'])
-=======
-# Bulk query to fetch orders with line items
-bulk_query = """
-    {
-      orders {
-        edges {
-          node {
-            id
-            name
-            createdAt
-            processedAt
-            currencyCode
-            totalPriceSet { shopMoney { amount currencyCode } }
-            tags
-            note
-            customer { id firstName lastName email }
-            shippingAddress { name address1 address2 city province country zip phone }
-            billingAddress { name address1 address2 city province country zip phone }
-            lineItems {
-              edges {
-                node {
-                  id
-                  title
-                  quantity
-                  fulfillableQuantity
-                  fulfillmentStatus
-                  variant { id sku title }
-                  originalUnitPriceSet { shopMoney { amount currencyCode } }
-                  discountedTotalSet { shopMoney { amount currencyCode } }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    """
->>>>>>> refs/remotes/origin/main:data_pipeline.py
-
     # Basic shape/transport error checks
     if not isinstance(create_result, dict):
         print("Error: Unexpected response type when creating bulk op:", type(create_result))
@@ -220,19 +176,10 @@ bulk_query = """
         with open(filename, 'w') as f:
             f.write(data_text)
         print(f"Results saved to {filename}")
-
-<<<<<<< HEAD:import requests.py
         # Show count of lines
         line_count = len([ln for ln in data_text.splitlines() if ln.strip()])
         print(f"Downloaded {line_count} JSONL lines.")
         return True
-=======
-    if SAVE_DATA:
-      # Save to file (uncomment if you want to persist locally)
-      with open('bulk_orders_data.jsonl', 'w') as f:
-          f.write(data_text)
-      print("Results saved to bulk_orders_data.jsonl")
->>>>>>> refs/remotes/origin/main:data_pipeline.py
 
     elif status == "FAILED":
         print("Bulk operation failed!")
